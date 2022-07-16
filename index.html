@@ -9,22 +9,26 @@
   </head>
   <body>
     <div id="app">
-        <h1>Desafio 1 - form com Vue2</h1>
-        <div>
-            <form>
-                <form-input 
-                v-for="(field, index) in fieldList"
-                :key="index"
-                :label="field"
-                @save="saveToResults"
-                />
-            </form>
-        </div>
-            <form-result 
-            v-if="value != undefined"
-            v-for="(value, field) in results"
-            :text="field + ': ' + value"
-            />
+      <h1>Desafio 1 - form com Vue2</h1>
+      <div>
+        <form>
+          <form-input
+            v-for="(field, index) in fieldList"
+            :key="index"
+            :label="field"
+            @save="saveToResults"
+          />
+        </form>
+        
+      </div>
+      <h2 v-if="showResults()">Dados salvos</h2>
+
+        <form-result
+          v-if="value != ''"
+          v-for="(value, field, index) in results"
+          :key="index"
+          :text="field + ': ' + value"
+        />
     </div>
 
     <script>
@@ -42,21 +46,21 @@
             </div>
             `,
         props: {
-            label: {type: String, required: true}
+          label: { type: String, required: true },
         },
         data() {
           return {
-            inputValue: '',
+            inputValue: "",
           };
         },
         computed: {},
         methods: {
-            save(){
-                this.$emit('save', this.inputValue, this.label);
-            },
-            clear(){
-                this.inputValue = ''
-            }
+          save() {
+            this.$emit("save", this.inputValue, this.label);
+          },
+          clear() {
+            this.inputValue = "";
+          },
         },
       });
 
@@ -64,11 +68,11 @@
       const formResult = Vue.component("FormResult", {
         template: `
             <div>
-                <p {{ text }}</p>
+                <p> {{ text }}</p>
             </div>
         `,
         props: {
-            text: {type: [String, Array], required: true}
+          text: { type: [String, Array], required: true },
         },
         data() {
           return {};
@@ -82,26 +86,23 @@
         el: "#app",
         data() {
           return {
-            fieldList: [
-                'Nome',
-                'Email',
-                'Profissão'
-            ],
-            results:{
-               'Nome':undefined,
-               'Email':undefined,
-               'Profissão': undefined 
-            }
-
+            fieldList: ["Nome", "Email", "Profissão"],
+            results: {
+              Nome: "",
+              Email: "",
+              Profissão: "",
+            },
           };
         },
         methods: {
-            saveToResults(value,label){
+          saveToResults(value, label) {
+            this.results[label] = value;
+          },
+          showResults(){
+            const areFalsy = Object.values(this.results).every(value => !value);
 
-                this.results[label] = value
-                
-                console.log(`${label}: ${value}`)
-            }
+            return !areFalsy;
+          }
         },
       });
     </script>
