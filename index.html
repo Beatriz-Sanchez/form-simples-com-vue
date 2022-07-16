@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form com Vue 2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  </head>
+  <body>
+    <div id="app">
+        <h1>Desafio 1 - form com Vue2</h1>
+        <div>
+            <form>
+                <form-input 
+                v-for="(field, index) in fieldList"
+                :key="index"
+                :label="field"
+                @save="saveToResults"
+                />
+            </form>
+        </div>
+            <form-result 
+            v-if="value != undefined"
+            v-for="(value, field) in results"
+            :text="field + ': ' + value"
+            />
+    </div>
+
+    <script>
+      //Form
+      const formInput = Vue.component("FormInput", {
+        template: `
+            <div>
+                <label :for="label + '-form'">{{ label }}:</label>
+                <br>
+                <input type="text" :id="label + '-form'" v-model="inputValue"/>
+                <button type="button" @click="save">Salvar</button>
+                <button type="button" @click="clear">Limpar</button>
+                <br>
+                <br>
+            </div>
+            `,
+        props: {
+            label: {type: String, required: true}
+        },
+        data() {
+          return {
+            inputValue: '',
+          };
+        },
+        computed: {},
+        methods: {
+            save(){
+                this.$emit('save', this.inputValue, this.label);
+            },
+            clear(){
+                this.inputValue = ''
+            }
+        },
+      });
+
+      //Resultado
+      const formResult = Vue.component("FormResult", {
+        template: `
+            <div>
+                <p {{ text }}</p>
+            </div>
+        `,
+        props: {
+            text: {type: [String, Array], required: true}
+        },
+        data() {
+          return {};
+        },
+        computed: {},
+        methods: {},
+      });
+
+      //App
+      const app = new Vue({
+        el: "#app",
+        data() {
+          return {
+            fieldList: [
+                'Nome',
+                'Email',
+                'Profissão'
+            ],
+            results:{
+               'Nome':undefined,
+               'Email':undefined,
+               'Profissão': undefined 
+            }
+
+          };
+        },
+        methods: {
+            saveToResults(value,label){
+
+                this.results[label] = value
+                
+                console.log(`${label}: ${value}`)
+            }
+        },
+      });
+    </script>
+  </body>
+</html>
