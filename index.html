@@ -10,30 +10,45 @@
   <body>
     <div id="app">
       <h1>Desafio 1 - form com Vue2</h1>
-      <div>
-        <form>
-          <form-input
-            v-for="(field, index) in fieldList"
-            :key="index"
-            :label="field"
-            @save="saveToResults"
-          />
-        </form>
-        
-      </div>
-      <h2 v-if="showResults()">Dados salvos</h2>
+      <form-container>
+        <div>
+          <form>
+            <form-input
+              v-for="(field, index) in fieldList"
+              :key="index"
+              :label="field"
+              @save="saveToResults"
+            />
+          </form>
+        </div>
+        <template v-slot:result>
+          <h2 v-if="showResults()">Dados salvos</h2>
 
-        <form-result
-          v-if="value != ''"
-          v-for="(value, field, index) in results"
-          :key="index"
-          :text="field + ': ' + value"
-        />
+          <form-result>
+            <form-field-result
+              v-if="value != ''"
+              v-for="(value, field, index) in results"
+              :key="index"
+              :text="field + ': ' + value"
+            />
+          </form-result>
+        </template>
+      </form-container>
     </div>
 
     <script>
+      //Form Container
+      const formContainer = {
+        template: `
+        <div>
+          <slot />
+          <slot name='result' />
+        </div>
+        `,
+      };
+
       //Form
-      const formInput = Vue.component("FormInput", {
+      const formInput = {
         template: `
             <div>
                 <label :for="label + '-form'">{{ label }}:</label>
@@ -62,10 +77,19 @@
             this.inputValue = "";
           },
         },
-      });
+      };
 
-      //Resultado
-      const formResult = Vue.component("FormResult", {
+      //Container de resultados
+      const formResult = {
+        template: `
+        <div>
+          <slot />
+        </div>
+        `,
+      };
+
+      //Resultados
+      const formFieldResult = {
         template: `
             <div>
                 <p> {{ text }}</p>
@@ -79,7 +103,7 @@
         },
         computed: {},
         methods: {},
-      });
+      };
 
       //App
       const app = new Vue({
@@ -98,11 +122,19 @@
           saveToResults(value, label) {
             this.results[label] = value;
           },
-          showResults(){
-            const areFalsy = Object.values(this.results).every(value => !value);
+          showResults() {
+            const areFalsy = Object.values(this.results).every(
+              (value) => !value
+            );
 
             return !areFalsy;
-          }
+          },
+        },
+        components: {
+          formContainer,
+          formInput,
+          formResult,
+          formFieldResult,
         },
       });
     </script>
